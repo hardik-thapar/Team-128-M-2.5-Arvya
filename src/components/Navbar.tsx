@@ -1,19 +1,128 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
-import { useWallet } from '../context/WalletContext';
+import { useUser } from '../middleware/auth';
 import Button from './Button';
+
+declare global {
+  interface Window {
+    googleTranslateElementInit: () => void;
+    google: {
+      translate: {
+        TranslateElement: {
+          new (options: any, element: string): any;
+          InlineLayout: {
+            SIMPLE: number;
+          };
+        };
+      };
+    };
+  }
+}
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
-  const { currentUser, logout } = useAuth();
-  const { balance } = useWallet();
+  const [showDevanagari, setShowDevanagari] = useState(false);
+  const { theme } = useTheme();
+  const user = useUser();
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  
+  const languages = {
+    en: 'English',
+    hi: 'हिंदी',
+    bn: 'বাংলা',
+    te: 'తెలుగు',
+    ta: 'தமிழ்',
+    mr: 'मराठी',
+    gu: 'ગુજરાતી',
+    kn: 'ಕನ್ನಡ',
+    ml: 'മലയാളം',
+    pa: 'ਪੰਜਾਬੀ'
+  };
+
+  const changeLanguage = useCallback((languageCode: string) => {
+    // Find the Google Translate select element
+    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+    if (select) {
+      // Set the value
+      select.value = languageCode;
+      // Create and dispatch both change and click events
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      select.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      
+      // Trigger Google Translate
+      if (window.google && window.google.translate) {
+        const event = new MouseEvent('change', {
+          view: window,
+          bubbles: true,
+          cancelable: true
+        });
+        select.dispatchEvent(event);
+      }
+      
+      setCurrentLanguage(languageCode);
+      
+      // Store the selected language in localStorage
+      localStorage.setItem('selectedLanguage', languageCode);
+    }
+  }, []);
+
+  // Load saved language preference
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    if (savedLanguage && languages[savedLanguage as keyof typeof languages]) {
+      setCurrentLanguage(savedLanguage);
+      // Wait for Google Translate to initialize
+      const checkGoogleTranslate = setInterval(() => {
+        const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+        if (select) {
+          clearInterval(checkGoogleTranslate);
+          changeLanguage(savedLanguage);
+        }
+      }, 100);
+
+      // Clear interval after 5 seconds if Google Translate doesn't load
+      setTimeout(() => clearInterval(checkGoogleTranslate), 5000);
+    }
+  }, [changeLanguage]);
+
+  useEffect(() => {
+    // Initialize Google Translate
+    window.googleTranslateElementInit = () => {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi,bn,te,ta,mr,gu,kn,ml,pa',
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+        },
+        'google_translate_element'
+      );
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  // Logo animation effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowDevanagari(prev => !prev);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -53,21 +162,11 @@ const Navbar: React.FC = () => {
     };
   }, [isMenuOpen]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    window.location.href = '/';
   };
 
   // Get the appropriate navbar background color based on theme
@@ -114,54 +213,71 @@ const Navbar: React.FC = () => {
     }
   };
 
+  // Get logo text color based on theme
+  const getLogoTextColor = () => {
+    if (theme === 'public') {
+      return 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent';
+    } else if (theme === 'dark') {
+      return 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent';
+    } else {
+      return 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent';
+    }
+  };
+
   return (
     <nav className={`${getNavbarBgColor()} ${getTextColor()}`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className={`text-xl md:text-2xl font-bold ${theme === 'public' ? 'text-primary' : ''}`}>
-            Arvya
+          <Link href="/" className="relative w-24 h-8">
+            <div className="relative w-full h-full">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={showDevanagari ? 'devanagari' : 'latin'}
+                  initial={{ opacity: 0, y: 10, rotateX: -90 }}
+                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                  exit={{ opacity: 0, y: -10, rotateX: 90 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    ease: [0.23, 1, 0.32, 1],
+                    opacity: { duration: 0.3 }
+                  }}
+                  className={`absolute left-0 text-xl md:text-2xl font-bold ${getLogoTextColor()} transform-gpu`}
+                  style={{ transformOrigin: 'center' }}
+                >
+                  {showDevanagari ? 'अरव्या' : 'Arvya'}
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link href="/" className={`${getHoverColor()} transition-colors`}>
-              Home
-            </Link>
-            <Link href="/about" className={`${getHoverColor()} transition-colors`}>
-              About
-            </Link>
-            <Link href="/contact" className={`${getHoverColor()} transition-colors`}>
-              Contact
-            </Link>
-            <Link href="/education" className={`${getHoverColor()} transition-colors`}>
-              Education
-            </Link>
-            
-            {currentUser ? (
-              <>
-                <Link href="/dashboard" className={`${getHoverColor()} transition-colors`}>
-                  Dashboard
-                </Link>
-                
-                <Link href="/dashboard/circles" className={`${getHoverColor()} transition-colors`}>
-                  Circles
-                </Link>
-                
-                {/* Wallet Balance */}
-                <Link href="/dashboard/wallet" className={`flex items-center ${getHoverColor()} transition-colors`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-                  </svg>
-                  {formatCurrency(balance)}
-                </Link>
-                
+            <div className="flex-1 flex items-center space-x-6">
+              <Link href="/" className={`${getHoverColor()} transition-colors`}>
+                Home
+              </Link>
+              <Link href="/about" className={`${getHoverColor()} transition-colors`}>
+                About
+              </Link>
+              <Link href="/community" className={`${getHoverColor()} transition-colors`}>
+                Community
+              </Link>
+              <Link href="/contact" className={`${getHoverColor()} transition-colors`}>
+                Contact
+              </Link>
+              <Link href="/education" className={`${getHoverColor()} transition-colors`}>
+                Education
+              </Link>
+            </div>
+
+            <div className="flex items-center space-x-6">
+              {user.isLoggedIn ? (
                 <div className="relative profile-menu-container">
                   <button 
                     onClick={toggleProfileMenu}
                     className={`flex items-center ${getHoverColor()} transition-colors focus:outline-none`}
                   >
-                    {currentUser.displayName || currentUser.email?.split('@')[0] || 'Account'}
+                    {user.name || user.email?.split('@')[0] || 'Account'}
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -175,20 +291,11 @@ const Navbar: React.FC = () => {
                         transition={{ duration: 0.2 }}
                         className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10"
                       >
+                        <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          Dashboard
+                        </Link>
                         <Link href="/dashboard/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                           Profile
-                        </Link>
-                        <Link href="/dashboard/wallet" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          My Wallet
-                        </Link>
-                        <Link href="/dashboard/investments" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          My Investments
-                        </Link>
-                        <Link href="/dashboard/circles" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          My Circles
-                        </Link>
-                        <Link href="/dashboard/circles/discover" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Discover Circles
                         </Link>
                         <button 
                           onClick={handleLogout}
@@ -200,272 +307,149 @@ const Navbar: React.FC = () => {
                     )}
                   </AnimatePresence>
                 </div>
-              </>
-            ) : (
-              <>
-                <Link href="/auth/login" className={`${getHoverColor()} transition-colors`}>
-                  Login
-                </Link>
-                <Link href="/auth/signup">
-                  <Button size="sm" className={theme === 'public' ? 'bg-primary hover:bg-primary-dark' : ''}>Sign Up</Button>
-                </Link>
-              </>
-            )}
-            
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-full ${theme === 'public' ? 'hover:bg-accent' : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} transition-colors`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
+                <div className="flex items-center space-x-4">
+                  <Link href="/auth/signin" className={`${getHoverColor()} transition-colors`}>
+                    Sign In
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button variant="primary" size="sm">Sign Up</Button>
+                  </Link>
+                </div>
               )}
-            </button>
+
+              {/* Simple Google Translate Element */}
+              <div id="google_translate_element"></div>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={toggleTheme}
-              className={`p-2 mr-2 rounded-full ${theme === 'public' ? 'hover:bg-accent' : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} transition-colors`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              )}
-            </button>
+          <div className="md:hidden flex items-center space-x-2">
+            {/* Simple Google Translate Element for Mobile */}
+            <div id="google_translate_element_mobile"></div>
+            
             <button
               onClick={toggleMenu}
-              className={`mobile-menu-button p-2 rounded-md ${theme === 'public' ? 'hover:bg-accent' : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} transition-colors focus:outline-none`}
-              aria-label="Toggle menu"
+              className="mobile-menu-button focus:outline-none"
             >
-              {isMenuOpen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`mobile-menu-container md:hidden ${getMobileMenuBgColor()}`}
-          >
-            <div className="px-4 py-2 space-y-1">
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Link href="/" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`md:hidden mobile-menu-container ${getMobileMenuBgColor()}`}
+            >
+              <div className="py-4 space-y-2">
+                <Link href="/" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Home
                 </Link>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-              >
-                <Link href="/about" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                <Link href="/about" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                   About
                 </Link>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Link href="/contact" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                <Link href="/community" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Community
+                </Link>
+                <Link href="/contact" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Contact
                 </Link>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-              >
-                <Link href="/education" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                <Link href="/education" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Education
                 </Link>
-              </motion.div>
-              
-              {currentUser ? (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link href="/dashboard" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                
+                {user.isLoggedIn ? (
+                  <>
+                    <Link href="/dashboard" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                       Dashboard
                     </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <Link href="/dashboard/circles" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      Circles
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <Link href="/dashboard/wallet" className={`flex items-center py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                        <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-                      </svg>
-                      My Wallet ({formatCurrency(balance)})
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45 }}
-                  >
-                    <Link href="/dashboard/investments" className={`flex items-center py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M3 3a1 1 0 000 2h10a1 1 0 100-2H3zm0 4a1 1 0 000 2h10a1 1 0 100-2H3zm0 4a1 1 0 100 2h10a1 1 0 100-2H3z" clipRule="evenodd" />
-                      </svg>
-                      My Investments
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <Link href="/dashboard/profile" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/dashboard/profile" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                       Profile
                     </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.55 }}
-                  >
-                    <Link href="/dashboard/circles" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      My Circles
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                  >
-                    <Link href="/dashboard/circles/discover" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      Discover Circles
-                    </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.65 }}
-                  >
-                    <button 
-                      onClick={() => {
-                        handleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      className={`block w-full text-left py-2 ${getHoverColor()} transition-colors`}
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Logout
                     </button>
-                  </motion.div>
-                </>
-              ) : (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link href="/auth/login" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
-                      Login
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth/signin" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Sign In
                     </Link>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
-                    <Link href="/auth/signup" className={`block py-2 ${getHoverColor()} transition-colors`} onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/signup" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                       Sign Up
                     </Link>
-                  </motion.div>
-                </>
-              )}
-              
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-              >
-                <button
-                  onClick={toggleTheme}
-                  className={`flex items-center py-2 ${getHoverColor()} transition-colors`}
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                      </svg>
-                      Light Mode
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                      </svg>
-                      Dark Mode
-                    </>
-                  )}
-                </button>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <style jsx global>{`
+        /* Basic Google Translate styling */
+        .goog-te-gadget {
+          font-family: inherit !important;
+          font-size: 14px !important;
+        }
+
+        .goog-te-gadget-simple {
+          background-color: transparent !important;
+          border: 1px solid #e2e8f0 !important;
+          padding: 4px 8px !important;
+          border-radius: 4px !important;
+          font-size: 14px !important;
+          line-height: 2 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          cursor: pointer !important;
+        }
+
+        .goog-te-gadget-simple img {
+          display: none !important;
+        }
+
+        .goog-te-gadget-simple .goog-te-menu-value {
+          color: #666 !important;
+          font-size: 14px !important;
+        }
+
+        .goog-te-gadget-simple .goog-te-menu-value span {
+          color: #666 !important;
+          font-size: 14px !important;
+          border: none !important;
+          font-family: inherit !important;
+        }
+
+        .goog-te-banner-frame {
+          display: none !important;
+        }
+
+        body {
+          top: 0 !important;
+        }
+
+        @media (max-width: 768px) {
+          .goog-te-gadget {
+            font-size: 13px !important;
+          }
+
+          .goog-te-gadget-simple {
+            padding: 2px 6px !important;
+          }
+        }
+      `}</style>
     </nav>
   );
 };
