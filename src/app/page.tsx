@@ -106,12 +106,12 @@ export default function Home() {
             variants={staggerChildren}
             className="max-w-3xl mx-auto text-center"
           >
-            <motion.div 
-              variants={fadeIn}
-              className="inline-block mb-4 px-4 py-1 bg-purple-100 rounded-full"
-            >
-              <span className="text-purple-800 font-medium text-sm">Empowering Women in Finance</span>
-            </motion.div>
+            {/* <motion.div  */}
+              {/* variants={fadeIn} */}
+              {/* // className="inline-block mb-4 px-4 py-1 bg-white rounded-full" */}
+            {/* > */}
+              {/* <span className="text-purple-800 font-medium text-sm"></span> */}
+            {/* </motion.div> */}
             
             <motion.h1 
               variants={fadeIn}
