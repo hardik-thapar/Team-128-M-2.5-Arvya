@@ -4,9 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import Link from 'next/link';
+import { useAuth } from '../../../context/AuthContext';
+import { createUserProfile } from '../../../lib/firebase/firestore';
 
 const SignUpPage = () => {
   const router = useRouter();
+  const { signup, updateUserProfile } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,18 +36,41 @@ const SignUpPage = () => {
         throw new Error('Password must be at least 6 characters long');
       }
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Create user with Firebase
+      const user = await signup(email, password);
+      
+      // Update user profile with display name
+      await updateUserProfile(name);
+      
+      // Create user profile in Firestore if needed
+      try {
+        await createUserProfile(user.uid, {
+          displayName: name,
+          email,
+          createdAt: new Date()
+        });
+      } catch (profileError) {
+        console.error('Error creating user profile:', profileError);
+      }
 
       // Set user as logged in
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', email);
       localStorage.setItem('userName', name);
 
-      // Redirect to dashboard or community page
-      router.push('/community');
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      // Redirect to dashboard
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please log in instead.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Please enter a valid email address.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password is too weak. Please use at least 6 characters.');
+      } else {
+        setError(error.message || 'An error occurred during sign up');
+      }
     } finally {
       setLoading(false);
     }
@@ -75,6 +101,7 @@ const SignUpPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter your full name"
                     required
+                    disabled={loading}
                   />
                 </div>
                 
@@ -88,6 +115,7 @@ const SignUpPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter your email"
                     required
+                    disabled={loading}
                   />
                 </div>
                 
@@ -101,6 +129,7 @@ const SignUpPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Create a password"
                     required
+                    disabled={loading}
                   />
                 </div>
                 
@@ -114,6 +143,7 @@ const SignUpPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Confirm your password"
                     required
+                    disabled={loading}
                   />
                 </div>
                 

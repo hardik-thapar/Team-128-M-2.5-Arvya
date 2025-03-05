@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function useAuthProtection() {
@@ -20,29 +20,63 @@ export function useRedirectIfAuthenticated() {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     if (isLoggedIn) {
-      router.push('/community');
+      router.push('/dashboard');
     }
   }, [router]);
 }
 
-export function useUser() {
-  const getUser = () => {
-    if (typeof window !== 'undefined') {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      if (isLoggedIn) {
-        return {
-          email: localStorage.getItem('userEmail'),
-          name: localStorage.getItem('userName'),
-          isLoggedIn: true
-        };
-      }
-    }
-    return {
-      email: null,
-      name: null,
-      isLoggedIn: false
-    };
-  };
+interface UserState {
+  email: string | null;
+  name: string | null;
+  isLoggedIn: boolean;
+}
 
-  return getUser();
+export function useUser() {
+  const [user, setUser] = useState<UserState>({
+    email: null,
+    name: null,
+    isLoggedIn: false
+  });
+
+  useEffect(() => {
+    // This will run only on the client side
+    if (typeof window !== 'undefined') {
+      const updateUserState = () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        if (isLoggedIn) {
+          setUser({
+            email: localStorage.getItem('userEmail'),
+            name: localStorage.getItem('userName'),
+            isLoggedIn: true
+          });
+        } else {
+          setUser({
+            email: null,
+            name: null,
+            isLoggedIn: false
+          });
+        }
+      };
+
+      // Initial check
+      updateUserState();
+
+      // Listen for storage changes
+      window.addEventListener('storage', updateUserState);
+      
+      // Custom event for auth state changes
+      const handleAuthChange = () => {
+        updateUserState();
+      };
+      
+      window.addEventListener('authStateChanged', handleAuthChange);
+      
+      return () => {
+        window.removeEventListener('storage', updateUserState);
+        window.removeEventListener('authStateChanged', handleAuthChange);
+      };
+    }
+  }, []);
+
+  return user;
 } 

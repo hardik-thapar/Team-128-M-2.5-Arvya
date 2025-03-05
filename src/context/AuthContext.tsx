@@ -47,6 +47,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      
+      // Update localStorage based on auth state
+      if (user) {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', user.email || '');
+        localStorage.setItem('userName', user.displayName || user.email?.split('@')[0] || '');
+      } else {
+        // Clear localStorage when user is logged out
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+      }
+      
       setLoading(false);
     });
 
@@ -64,6 +77,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
+    // Clear localStorage before Firebase signOut
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    
     return await signOut(auth);
   };
 

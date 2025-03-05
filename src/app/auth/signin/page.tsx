@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../../components/Layout';
 import Link from 'next/link';
+import { useAuth } from '../../../context/AuthContext';
 
 const SignInPage = () => {
   const router = useRouter();
+  const { login, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,22 +20,53 @@ const SignInPage = () => {
     setLoading(true);
 
     try {
-      // For demo purposes, we'll just check if email and password are not empty
       if (!email || !password) {
         throw new Error('Please fill in all fields');
       }
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Set user as logged in
+      const user = await login(email, password);
+      
+      // Store user info in localStorage for navbar state
       localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userEmail', user.email || '');
+      localStorage.setItem('userName', user.displayName || user.email?.split('@')[0] || '');
+      
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        setError('Invalid email or password');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Invalid email address');
+      } else {
+        setError(error.message || 'Failed to sign in');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      // Redirect to dashboard or community page
-      router.push('/community');
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const user = await signInWithGoogle();
+      
+      // Store user info in localStorage for navbar state
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', user.email || '');
+      localStorage.setItem('userName', user.displayName || user.email?.split('@')[0] || '');
+      
+      router.push('/dashboard');
+    } catch (err: any) {
+      console.error('Google sign-in error:', err);
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in cancelled');
+      } else if (err.code === 'auth/popup-blocked') {
+        setError('Pop-up blocked by browser. Please allow pop-ups for this site.');
+      } else {
+        setError(err.message || 'Failed to sign in with Google');
+      }
     } finally {
       setLoading(false);
     }
@@ -64,6 +97,7 @@ const SignInPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter your email"
                     required
+                    disabled={loading}
                   />
                 </div>
                 
@@ -77,6 +111,7 @@ const SignInPage = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter your password"
                     required
+                    disabled={loading}
                   />
                 </div>
                 
@@ -88,6 +123,31 @@ const SignInPage = () => {
                   {loading ? 'Signing In...' : 'Sign In'}
                 </button>
               </form>
+
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-full shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"
+                    />
+                  </svg>
+                  Sign in with Google
+                </button>
+              </div>
               
               <div className="mt-6 text-center">
                 <p className="text-gray-600 text-sm">
@@ -105,4 +165,4 @@ const SignInPage = () => {
   );
 };
 
-export default SignInPage; 
+export default SignInPage;

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/translate": "^8.5.1",
     "firebase": "^11.4.0",
     "firebase-admin": "^13.1.0",
     "framer-motion": "^12.4.10",
@@ -16,7 +17,8 @@
     "jspdf-autotable": "^5.0.2",
     "next": "15.2.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

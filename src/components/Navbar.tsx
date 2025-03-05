@@ -243,6 +243,23 @@ const Navbar: React.FC = () => {
     }
   };
 
+  // Add useEffect to check localStorage on client side
+  useEffect(() => {
+    // This will run only on the client side
+    if (typeof window !== 'undefined') {
+      // Force a re-render when localStorage changes
+      const handleStorageChange = () => {
+        // This will trigger a re-render of the component
+        setIsMenuOpen(isMenuOpen);
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+    }
+  }, [isMenuOpen]);
+
   return (
     <nav className={`${getNavbarBgColor()} ${getTextColor()}`}>
       <div className="container mx-auto px-4">
@@ -316,12 +333,12 @@ const Navbar: React.FC = () => {
                         <Link href="/dashboard/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                           Profile
                         </Link>
-                        <button 
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                          Logout
-                        </button>
+                        {/* <button  */}
+                          {/* // onClick={handleLogout} */}
+                          {/* // className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" */}
+                        {/* // > */}
+                          {/* Logout */}
+                        {/* </button> */}
                       </motion.div>
                     )}
                   </AnimatePresence>
