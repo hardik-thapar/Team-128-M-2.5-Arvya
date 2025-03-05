@@ -481,6 +481,143 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQs Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Get answers to common questions about Arvya and our investment platform
+            </p>
+          </motion.div>
+
+          <div className="max-w-3xl mx-auto">
+            {/* FAQ Item 1 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="mb-6"
+            >
+              <details className="group bg-white rounded-lg shadow-md p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-lg text-gray-800">
+                  <span>What makes Arvya different from other investment platforms?</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" width="24" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="mt-4 text-gray-600">
+                  <p>Arvya stands out with our focus on women's financial empowerment, AI-driven personalized investment strategies, and comprehensive educational resources. We combine cutting-edge technology with human expertise to provide a platform that's both powerful and accessible, especially designed to close the gender investment gap.</p>
+                </div>
+              </details>
+            </motion.div>
+
+            {/* FAQ Item 2 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="mb-6"
+            >
+              <details className="group bg-white rounded-lg shadow-md p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-lg text-gray-800">
+                  <span>How do I get started with investing on Arvya?</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" width="24" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="mt-4 text-gray-600">
+                  <p>Getting started is simple! Create an account, complete your investor profile, set your financial goals, and make your first deposit. Our platform will guide you through each step, recommending investment strategies tailored to your goals and risk tolerance. You can start with as little as ₹500 and gradually increase your investments as you become more comfortable.</p>
+                </div>
+              </details>
+            </motion.div>
+
+            {/* FAQ Item 3 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="mb-6"
+            >
+              <details className="group bg-white rounded-lg shadow-md p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-lg text-gray-800">
+                  <span>Is my money safe with Arvya?</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" width="24" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="mt-4 text-gray-600">
+                  <p>Absolutely. Security is our top priority. Arvya employs bank-level security measures including 256-bit encryption, two-factor authentication, and regular security audits. Your investments are protected by regulatory safeguards, and we're fully compliant with all relevant financial regulations. Additionally, we maintain segregated accounts, ensuring your investments are always separate from our operating funds.</p>
+                </div>
+              </details>
+            </motion.div>
+
+            {/* FAQ Item 4 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="mb-6"
+            >
+              <details className="group bg-white rounded-lg shadow-md p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-lg text-gray-800">
+                  <span>What types of investments does Arvya offer?</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" width="24" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="mt-4 text-gray-600">
+                  <p>Arvya offers a diverse range of investment options including stocks, mutual funds, ETFs, bonds, and specialized investment circles focused on sustainable and women-led businesses. Our platform provides both ready-made portfolios for beginners and customizable options for experienced investors. We also offer exclusive access to curated investment opportunities that align with our mission of promoting financial inclusion and gender equality.</p>
+                </div>
+              </details>
+            </motion.div>
+
+            {/* FAQ Item 5 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="mb-6"
+            >
+              <details className="group bg-white rounded-lg shadow-md p-6 cursor-pointer">
+                <summary className="flex justify-between items-center font-semibold text-lg text-gray-800">
+                  <span>How does Arvya support financial education?</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" width="24" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </span>
+                </summary>
+                <div className="mt-4 text-gray-600">
+                  <p>Education is at the core of our mission. Arvya provides comprehensive learning resources including articles, videos, webinars, and interactive courses designed for all knowledge levels. Our education section covers everything from basic financial concepts to advanced investment strategies. We also offer personalized learning paths based on your goals and experience, and host regular workshops and community events focused on building financial confidence and knowledge.</p>
+                </div>
+              </details>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
