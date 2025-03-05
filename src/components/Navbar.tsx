@@ -333,6 +333,9 @@ const Navbar: React.FC = () => {
                         <Link href="/dashboard/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                           Profile
                         </Link>
+                        <Link href="/dashboard/ai-assistance" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          AI Investment Assistant
+                        </Link>
                         {/* <button  */}
                           {/* // onClick={handleLogout} */}
                           {/* // className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" */}
@@ -404,6 +407,9 @@ const Navbar: React.FC = () => {
                     </Link>
                     <Link href="/dashboard/profile" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
                       Profile
+                    </Link>
+                    <Link href="/dashboard/ai-assistance" className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      AI Investment Assistant
                     </Link>
                     <button
                       onClick={handleLogout}
