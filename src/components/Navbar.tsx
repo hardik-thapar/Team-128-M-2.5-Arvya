@@ -91,6 +91,27 @@ const Navbar: React.FC = () => {
   }, [changeLanguage]);
 
   useEffect(() => {
+    // First, clean up any existing elements and scripts
+    const cleanup = () => {
+      const existingElements = document.querySelectorAll('#google_translate_element');
+      existingElements.forEach(el => el.remove());
+      
+      const existingScripts = document.querySelectorAll('script[src*="translate.google.com"]');
+      existingScripts.forEach(script => script.remove());
+      
+      if ('googleTranslateElementInit' in window) {
+        (window as any).googleTranslateElementInit = undefined;
+      }
+    };
+
+    // Clean up first
+    cleanup();
+
+    // Create and append the translate element
+    const translateDiv = document.createElement('div');
+    translateDiv.id = 'google_translate_element';
+    document.querySelector('.translate-container')?.appendChild(translateDiv);
+
     // Initialize Google Translate
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
@@ -103,17 +124,15 @@ const Navbar: React.FC = () => {
       );
     };
 
+    // Add the script
     const script = document.createElement('script');
     script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
     script.async = true;
     document.body.appendChild(script);
 
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
+    // Cleanup on unmount
+    return cleanup;
+  }, []); // Empty dependency array to run only once
 
   // Logo animation effect
   useEffect(() => {
@@ -317,20 +336,15 @@ const Navbar: React.FC = () => {
                   </Link>
                 </div>
               )}
-
-              {/* Simple Google Translate Element */}
-              <div id="google_translate_element"></div>
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            {/* Simple Google Translate Element for Mobile */}
-            <div id="google_translate_element_mobile"></div>
-            
+          {/* Right Side Elements - Simplified */}
+          <div className="flex items-center space-x-4">
+            <div className="translate-container"></div>
             <button
               onClick={toggleMenu}
-              className="mobile-menu-button focus:outline-none"
+              className="mobile-menu-button md:hidden focus:outline-none"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -398,56 +412,19 @@ const Navbar: React.FC = () => {
       </div>
 
       <style jsx global>{`
-        /* Basic Google Translate styling */
-        .goog-te-gadget {
-          font-family: inherit !important;
-          font-size: 14px !important;
+        /* Minimal required styles */
+        .translate-container {
+          display: flex;
+          align-items: center;
         }
 
-        .goog-te-gadget-simple {
-          background-color: transparent !important;
-          border: 1px solid #e2e8f0 !important;
-          padding: 4px 8px !important;
-          border-radius: 4px !important;
-          font-size: 14px !important;
-          line-height: 2 !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          cursor: pointer !important;
-        }
-
-        .goog-te-gadget-simple img {
-          display: none !important;
-        }
-
-        .goog-te-gadget-simple .goog-te-menu-value {
-          color: #666 !important;
-          font-size: 14px !important;
-        }
-
-        .goog-te-gadget-simple .goog-te-menu-value span {
-          color: #666 !important;
-          font-size: 14px !important;
-          border: none !important;
-          font-family: inherit !important;
-        }
-
+        /* Hide Google Translate attribution */
         .goog-te-banner-frame {
           display: none !important;
         }
 
         body {
           top: 0 !important;
-        }
-
-        @media (max-width: 768px) {
-          .goog-te-gadget {
-            font-size: 13px !important;
-          }
-
-          .goog-te-gadget-simple {
-            padding: 2px 6px !important;
-          }
         }
       `}</style>
     </nav>
