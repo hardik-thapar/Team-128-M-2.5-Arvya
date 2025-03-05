@@ -9,6 +9,10 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
@@ -17,22 +21,28 @@ import { auth } from '../lib/firebase/firebase';
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  signup: (email: string, password: string) => Promise<User>;
-  login: (email: string, password: string) => Promise<User>;
+  error: string | null;
+  signup: (email: string, password: string, name: string) => Promise<User | null>;
+  login: (email: string, password: string) => Promise<User | null>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updateUserProfile: (displayName: string, photoURL?: string) => Promise<void>;
+  updateUserProfile: (displayName: string) => Promise<void>;
+  updateUserEmail: (email: string, password: string) => Promise<void>;
+  updateUserPassword: (currentPassword: string, newPassword: string) => Promise<void>;
   signInWithGoogle: () => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   loading: true,
-  signup: async () => { throw new Error('Not implemented'); },
-  login: async () => { throw new Error('Not implemented'); },
-  logout: async () => { throw new Error('Not implemented'); },
-  resetPassword: async () => { throw new Error('Not implemented'); },
-  updateUserProfile: async () => { throw new Error('Not implemented'); },
+  error: null,
+  signup: async () => null,
+  login: async () => null,
+  logout: async () => {},
+  resetPassword: async () => {},
+  updateUserProfile: async () => {},
+  updateUserEmail: async () => {},
+  updateUserPassword: async () => {},
   signInWithGoogle: async () => { throw new Error('Not implemented'); },
 });
 
@@ -43,58 +53,174 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+        setLoading(false);
+        
+        // Update localStorage based on auth state
+        if (user) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', user.email || '');
+          localStorage.setItem('userName', user.displayName || '');
+          
+          // Dispatch custom event for components that need to know about auth changes
+          window.dispatchEvent(new Event('authStateChanged'));
+        } else {
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userName');
+          
+          // Dispatch custom event for components that need to know about auth changes
+          window.dispatchEvent(new Event('authStateChanged'));
+        }
+      });
       
-      // Update localStorage based on auth state
-      if (user) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', user.email || '');
-        localStorage.setItem('userName', user.displayName || user.email?.split('@')[0] || '');
-      } else {
-        // Clear localStorage when user is logged out
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userName');
-      }
-      
+      return unsubscribe;
+    } catch (error) {
+      console.error('Error setting up auth state listener:', error);
       setLoading(false);
-    });
-
-    return unsubscribe;
+      return () => {};
+    }
   }, []);
 
-  const signup = async (email: string, password: string): Promise<User> => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+  const signup = async (email: string, password: string, name: string): Promise<User | null> => {
+    setError(null);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update profile with display name
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
+          displayName: name
+        });
+        
+        // Update local state
+        setCurrentUser({
+          ...userCredential.user,
+          displayName: name
+        });
+        
+        // Update localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userName', name);
+      }
+      
+      return userCredential.user;
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Signup error:', error);
+      return null;
+    }
   };
 
-  const login = async (email: string, password: string): Promise<User> => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+  const login = async (email: string, password: string): Promise<User | null> => {
+    setError(null);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Update localStorage
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userName', userCredential.user.displayName || '');
+      
+      return userCredential.user;
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Login error:', error);
+      return null;
+    }
   };
 
   const logout = async (): Promise<void> => {
-    // Clear localStorage before Firebase signOut
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-    
-    return await signOut(auth);
+    setError(null);
+    try {
+      await signOut(auth);
+      
+      // Clear localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Logout error:', error);
+    }
   };
 
   const resetPassword = async (email: string): Promise<void> => {
-    return await sendPasswordResetEmail(auth, email);
+    setError(null);
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Reset password error:', error);
+      throw error;
+    }
   };
 
-  const updateUserProfile = async (displayName: string, photoURL?: string): Promise<void> => {
-    if (!currentUser) throw new Error('No user logged in');
-    return await updateProfile(currentUser, {
-      displayName,
-      photoURL: photoURL || currentUser.photoURL
-    });
+  const updateUserProfile = async (displayName: string): Promise<void> => {
+    setError(null);
+    try {
+      if (currentUser) {
+        await updateProfile(currentUser, { displayName });
+        
+        // Update localStorage
+        localStorage.setItem('userName', displayName);
+        
+        // Update local state to trigger re-render
+        setCurrentUser({ ...currentUser, displayName });
+      }
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Update profile error:', error);
+      throw error;
+    }
+  };
+
+  const updateUserEmail = async (email: string, password: string): Promise<void> => {
+    setError(null);
+    try {
+      if (currentUser && currentUser.email) {
+        // Re-authenticate user before changing email
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
+        
+        // Update email
+        await updateEmail(currentUser, email);
+        
+        // Update localStorage
+        localStorage.setItem('userEmail', email);
+        
+        // Update local state to trigger re-render
+        setCurrentUser({ ...currentUser, email });
+      }
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Update email error:', error);
+      throw error;
+    }
+  };
+
+  const updateUserPassword = async (currentPassword: string, newPassword: string): Promise<void> => {
+    setError(null);
+    try {
+      if (currentUser && currentUser.email) {
+        // Re-authenticate user before changing password
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+        await reauthenticateWithCredential(currentUser, credential);
+        
+        // Update password
+        await updatePassword(currentUser, newPassword);
+      }
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Update password error:', error);
+      throw error;
+    }
   };
 
   const signInWithGoogle = async (): Promise<User> => {
@@ -106,11 +232,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     currentUser,
     loading,
+    error,
     signup,
     login,
     logout,
     resetPassword,
     updateUserProfile,
+    updateUserEmail,
+    updateUserPassword,
     signInWithGoogle
   };
 

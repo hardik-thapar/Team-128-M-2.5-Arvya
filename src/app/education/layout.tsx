@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
@@ -87,9 +87,25 @@ export default function EducationLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { theme } = useTheme();
+  const [themeValue, setThemeValue] = useState('public');
+  const [themeError, setThemeError] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Use the ThemeContext at the top level of the component
+  const themeContext = useTheme();
+  
+  // Update the theme value when the context changes
+  useEffect(() => {
+    try {
+      if (themeContext && themeContext.theme) {
+        setThemeValue(themeContext.theme);
+      }
+    } catch (error) {
+      console.error('Error accessing ThemeContext:', error);
+      setThemeError(true);
+    }
+  }, [themeContext]);
 
   const toggleExpand = (path: string) => {
     setExpandedItems(prev => ({
@@ -109,7 +125,7 @@ export default function EducationLayout({
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
       
       <div className="flex flex-col md:flex-row flex-1">
@@ -117,7 +133,7 @@ export default function EducationLayout({
         <div className="md:hidden p-4 flex items-center">
           <button 
             onClick={toggleMobileSidebar}
-            className={`px-4 py-2 rounded-md ${theme === 'public' ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+            className="px-4 py-2 rounded-md bg-purple-600 text-white"
           >
             {isMobileSidebarOpen ? 'Hide Menu' : 'Show Menu'}
           </button>
@@ -129,10 +145,10 @@ export default function EducationLayout({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className={`w-full md:hidden border-b ${theme === 'public' ? 'border-primary-light bg-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'}`}
+            className="w-full md:hidden border-b border-purple-200 bg-white"
           >
             <div className="p-4">
-              <h2 className={`text-xl font-bold mb-6 ${theme === 'public' ? 'text-primary' : ''}`}>
+              <h2 className="text-xl font-bold mb-6 text-purple-800">
                 Financial Education
               </h2>
               <nav>
@@ -144,10 +160,8 @@ export default function EducationLayout({
                           onClick={() => toggleExpand(item.path)}
                           className={`flex justify-between items-center p-2 rounded-md w-full text-left ${
                             isParentActive(item)
-                              ? theme === 'public'
-                                ? 'bg-accent text-primary-dark font-medium'
-                                : 'bg-gray-100 dark:bg-gray-800 font-medium'
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                              ? 'bg-purple-100 text-purple-800 font-medium'
+                              : 'hover:bg-purple-50 text-gray-800'
                           }`}
                         >
                           <span>{item.title}</span>
@@ -163,12 +177,8 @@ export default function EducationLayout({
                                   href={subItem.path}
                                   className={`block rounded-lg px-4 py-2 ${
                                     isActive(subItem.path)
-                                      ? theme === 'public'
-                                        ? 'bg-accent text-primary-dark font-medium'
-                                        : 'bg-gray-100 dark:bg-gray-800 font-medium'
-                                      : theme === 'public'
-                                      ? 'text-primary hover:bg-gray-50'
-                                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                      ? 'bg-purple-100 text-purple-800 font-medium'
+                                      : 'text-purple-600 hover:bg-purple-50'
                                   }`}
                                 >
                                   {subItem.title}
@@ -191,10 +201,10 @@ export default function EducationLayout({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className={`hidden md:block w-64 min-h-screen flex-shrink-0 border-r ${theme === 'public' ? 'border-primary-light bg-white' : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'}`}
+          className="hidden md:block w-64 min-h-screen flex-shrink-0 border-r border-purple-200 bg-white"
         >
           <div className="p-4 sticky top-0">
-            <h2 className={`text-xl font-bold mb-6 ${theme === 'public' ? 'text-primary' : ''}`}>
+            <h2 className="text-xl font-bold mb-6 text-purple-800">
               Financial Education
             </h2>
             <nav>
@@ -206,10 +216,8 @@ export default function EducationLayout({
                         onClick={() => toggleExpand(item.path)}
                         className={`flex justify-between items-center p-2 rounded-md w-full text-left ${
                           isParentActive(item)
-                            ? theme === 'public'
-                              ? 'bg-accent text-primary-dark font-medium'
-                              : 'bg-gray-100 dark:bg-gray-800 font-medium'
-                            : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                            ? 'bg-purple-100 text-purple-800 font-medium'
+                            : 'hover:bg-purple-50 text-gray-800'
                         }`}
                       >
                         <span>{item.title}</span>
@@ -225,12 +233,8 @@ export default function EducationLayout({
                                 href={subItem.path}
                                 className={`block rounded-lg px-4 py-2 ${
                                   isActive(subItem.path)
-                                    ? theme === 'public'
-                                      ? 'bg-accent text-primary-dark font-medium'
-                                      : 'bg-gray-100 dark:bg-gray-800 font-medium'
-                                    : theme === 'public'
-                                    ? 'text-primary hover:bg-gray-50'
-                                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                    ? 'bg-purple-100 text-purple-800 font-medium'
+                                    : 'text-purple-600 hover:bg-purple-50'
                                 }`}
                               >
                                 {subItem.title}
@@ -248,18 +252,13 @@ export default function EducationLayout({
         </motion.aside>
 
         {/* Main content */}
-        <motion.main 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex-1 p-6"
-        >
+        <main className="flex-1 p-6 bg-white">
           {children}
-        </motion.main>
+        </main>
       </div>
       
       {/* Footer */}
-      <footer className={`p-4 ${theme === 'public' ? 'bg-white border-t border-primary-light text-primary-dark' : 'bg-gray-800 text-white'}`}>
+      <footer className={`p-4 ${themeValue === 'public' ? 'bg-white border-t border-primary-light text-primary-dark' : 'bg-gray-800 text-white'}`}>
         <div className="container mx-auto text-center">
           <p>&copy; {new Date().getFullYear()} Arvya Platform. All rights reserved.</p>
         </div>
