@@ -83,59 +83,52 @@ export default function Home() {
         {/* Decorative Elements - Subtle and Professional */}
         <div className="absolute inset-0 z-1 pointer-events-none">
           <motion.div 
-            className="absolute top-20 left-20 hidden md:block"
+            className="absolute top-10 sm:top-20 left-10 sm:left-20 hidden md:block"
             animate={floatingAnimation}
           >
-            <div className="w-32 h-32 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-xl"></div>
+            <div className="w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-xl"></div>
             </motion.div>
             
             <motion.div 
-            className="absolute bottom-20 right-20 hidden md:block"
+            className="absolute bottom-10 sm:bottom-20 right-10 sm:right-20 hidden md:block"
             animate={floatingAnimation}
             transition={{ delay: 1 }}
           >
-            <div className="w-40 h-40 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-xl"></div>
+            <div className="w-32 sm:w-40 h-32 sm:h-40 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-xl"></div>
             </motion.div>
           </div>
           
         {/* Content Overlay */}
-        <div className="relative z-10 container mx-auto px-4 py-20 h-screen flex flex-col justify-center">
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-20 h-screen flex flex-col justify-center">
           <motion.div 
             initial="hidden"
             animate="visible"
             variants={staggerChildren}
             className="max-w-3xl mx-auto text-center"
           >
-            {/* <motion.div  */}
-              {/* variants={fadeIn} */}
-              {/* // className="inline-block mb-4 px-4 py-1 bg-white rounded-full" */}
-            {/* > */}
-              {/* <span className="text-purple-800 font-medium text-sm"></span> */}
-            {/* </motion.div> */}
-            
             <motion.h1 
               variants={fadeIn}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-900 to-pink-600"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-900 to-pink-600"
             >
               Welcome to Arvya
             </motion.h1>
             
             <motion.p 
               variants={fadeIn}
-              className="text-xl md:text-2xl text-gray-700 mb-8 leading-relaxed"
+              className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-6 sm:mb-8 leading-relaxed px-2 sm:px-0"
             >
               Breaking barriers in finance. Creating opportunities for women to build wealth, 
               lead companies, and shape the future of investment.
             </motion.p>
             
-            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
               <Link href="/auth/signup">
-                <Button size="lg" className="bg-purple-800 hover:bg-purple-900 text-white rounded-full px-8 py-4 shadow-lg">
+                <Button size="lg" className="bg-purple-800 hover:bg-purple-900 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 shadow-lg text-sm sm:text-base">
                   Join the Movement
                 </Button>
               </Link>
               <Link href="/about">
-                <Button size="lg" className="bg-purple-800 hover:bg-purple-900 text-white rounded-full px-8 py-4 shadow-lg">
+                <Button size="lg" className="bg-purple-800 hover:bg-purple-900 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 shadow-lg text-sm sm:text-base mt-3 sm:mt-0">
                   Our Mission
                 </Button>
               </Link>
@@ -144,37 +137,37 @@ export default function Home() {
             {/* Women Empowerment Stats - Professional Design */}
             <motion.div 
               variants={fadeIn}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12"
             >
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 shadow-md">
-                <div className="text-3xl font-bold text-purple-800">68%</div>
-                <div className="text-gray-600">Women-Led Growth</div>
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 sm:p-5 shadow-md">
+                <div className="text-2xl sm:text-3xl font-bold text-purple-800">68%</div>
+                <div className="text-sm sm:text-base text-gray-600">Women-Led Growth</div>
               </div>
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 shadow-md">
-                <div className="text-3xl font-bold text-purple-800">10K+</div>
-                <div className="text-gray-600">Female Entrepreneurs</div>
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 sm:p-5 shadow-md">
+                <div className="text-2xl sm:text-3xl font-bold text-purple-800">10K+</div>
+                <div className="text-sm sm:text-base text-gray-600">Female Entrepreneurs</div>
               </div>
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 shadow-md">
-                <div className="text-3xl font-bold text-purple-800">$1.2B</div>
-                <div className="text-gray-600">Women-Backed Funds</div>
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 sm:p-5 shadow-md">
+                <div className="text-2xl sm:text-3xl font-bold text-purple-800">$1.2B</div>
+                <div className="text-sm sm:text-base text-gray-600">Women-Backed Funds</div>
               </div>
             </motion.div>
             
             <motion.div 
               variants={fadeIn}
-              className="flex flex-wrap justify-center items-center gap-8 opacity-70"
+              className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 opacity-70"
             >
-              <p className="w-full text-sm text-gray-500 mb-2">Partnered with leading women's organizations</p>
-              <div className="h-8">
-                <svg width="120" height="24" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <p className="w-full text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">Partnered with leading women's organizations</p>
+              <div className="h-6 sm:h-8">
+                <svg width="100" height="20" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:scale-100 scale-75">
                   <path d="M0 0H24V24H0V0Z" fill="#F8BF18"/>
                   <path d="M28 6H44V10H28V6Z" fill="#666666"/>
                   <path d="M28 12H52V16H28V12Z" fill="#666666"/>
                   <path d="M28 18H48V22H28V18Z" fill="#666666"/>
                 </svg>
               </div>
-              <div className="h-8">
-                <svg width="120" height="24" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="h-6 sm:h-8">
+                <svg width="100" height="20" viewBox="0 0 120 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:scale-100 scale-75">
                   <path d="M60 6H120V10H60V6Z" fill="#666666"/>
                   <path d="M60 12H110V16H60V12Z" fill="#666666"/>
                   <path d="M60 18H100V22H60V18Z" fill="#666666"/>
@@ -190,17 +183,17 @@ export default function Home() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="bg-white/95 rounded-lg shadow-md p-4 w-64 transform -rotate-3"
+            className="bg-white/95 rounded-lg shadow-md p-3 sm:p-4 w-56 sm:w-64 transform -rotate-3"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <div className="font-bold text-gray-800">Women in Leadership</div>
+              <div className="font-bold text-gray-800 text-sm sm:text-base">Women in Leadership</div>
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               Women-led companies outperform the market by 3.5% annually
             </div>
           </motion.div>
@@ -211,17 +204,17 @@ export default function Home() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.3, duration: 0.8 }}
-            className="bg-white/95 rounded-lg shadow-md p-4 w-64 transform rotate-3"
+            className="bg-white/95 rounded-lg shadow-md p-3 sm:p-4 w-56 sm:w-64 transform rotate-3"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <div className="font-bold text-gray-800">Closing the Gap</div>
+              <div className="font-bold text-gray-800 text-sm sm:text-base">Closing the Gap</div>
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               Dedicated to reducing the 30% gender investment gap
             </div>
           </motion.div>
@@ -232,20 +225,21 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+          className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10"
         >
           <div className="flex flex-col items-center">
-            <p className="text-sm text-gray-500 mb-2">Scroll to explore</p>
-            <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center pt-2">
+            <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">Scroll to explore</p>
+            <div className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-gray-400 rounded-full flex justify-center pt-1 sm:pt-2">
               <motion.div 
                 animate={{ 
-                  y: [0, 8, 0],
+                  y: [0, 6, 0],
+                  scale: [1, 0.8, 1]
                 }}
                 transition={{ 
                   repeat: Infinity,
                   duration: 1.5
                 }}
-                className="w-1.5 h-1.5 bg-gray-400 rounded-full"
+                className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-400 rounded-full"
               />
             </div>
             </div>
@@ -253,28 +247,28 @@ export default function Home() {
       </section>
 
       {/* About Arvya Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
+      <section className="py-12 sm:py-16 md:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-16">
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="lg:w-1/2"
+              className="w-full lg:w-1/2 mb-8 lg:mb-0"
             >
               <div className="relative">
-                <div className="bg-gradient-to-tr from-purple-200 to-pink-100 rounded-2xl p-8 h-[400px] w-full flex items-center justify-center">
+                <div className="bg-gradient-to-tr from-purple-200 to-pink-100 rounded-2xl p-4 sm:p-6 md:p-8 h-[300px] sm:h-[350px] md:h-[400px] w-full flex items-center justify-center">
                   <div className="relative">
                     {/* Investment Performance Card */}
-                    <div className="absolute -top-10 -left-10 bg-white rounded-lg shadow-lg p-4 z-20">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white">
-                          <span className="text-xl">📈</span>
+                    <div className="absolute -top-6 sm:-top-8 md:-top-10 -left-6 sm:-left-8 md:-left-10 bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 z-20">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-500 rounded-full flex items-center justify-center text-white">
+                          <span className="text-lg sm:text-xl">📈</span>
                         </div>
                         <div>
-                          <div className="text-sm font-bold">Portfolio Growth</div>
-                          <div className="text-green-500 font-semibold">+28.5% YTD</div>
+                          <div className="text-xs sm:text-sm font-bold">Portfolio Growth</div>
+                          <div className="text-green-500 text-sm sm:text-base font-semibold">+28.5% YTD</div>
                         </div>
                       </div>
                     </div>
@@ -285,18 +279,18 @@ export default function Home() {
                       alt="Investment Dashboard" 
                       width={500} 
                       height={300}
-                      className="rounded-xl shadow-2xl"
+                      className="rounded-xl shadow-2xl max-w-full h-auto"
                     />
 
                     {/* Stats Card */}
-                    <div className="absolute -bottom-10 -right-10 bg-white rounded-lg shadow-lg p-4 z-20">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white">
-                          <span className="text-xl">🎯</span>
+                    <div className="absolute -bottom-6 sm:-bottom-8 md:-bottom-10 -right-6 sm:-right-8 md:-right-10 bg-white rounded-lg shadow-lg p-2 sm:p-3 md:p-4 z-20">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 rounded-full flex items-center justify-center text-white">
+                          <span className="text-lg sm:text-xl">🎯</span>
                         </div>
                         <div>
-                          <div className="text-sm font-bold">Investment Goals</div>
-                          <div className="text-purple-500 font-semibold">On Track</div>
+                          <div className="text-xs sm:text-sm font-bold">Investment Goals</div>
+                          <div className="text-purple-500 text-sm sm:text-base font-semibold">On Track</div>
                         </div>
                       </div>
                     </div>
@@ -310,54 +304,54 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="lg:w-1/2"
+              className="w-full lg:w-1/2"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-900">
                 About Arvya
               </h2>
-              <div className="w-20 h-1 bg-pink-500 mb-8"></div>
-              <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+              <div className="w-16 sm:w-20 h-1 bg-pink-500 mb-6 sm:mb-8"></div>
+              <p className="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 leading-relaxed">
                 Arvya is a pioneering investment platform designed to empower individuals in their financial journey. We combine cutting-edge technology with personalized guidance to make smart investing accessible to everyone.
               </p>
               
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-purple-600 text-xl">✓</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-purple-600 text-base sm:text-xl">✓</span>
                 </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Smart Portfolio</h3>
-                    <p className="text-gray-600">AI-driven investment strategies tailored to your goals</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-pink-600 text-xl">💡</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Expert Guidance</h3>
-                    <p className="text-gray-600">Professional advisors at your fingertips</p>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Smart Portfolio</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">AI-driven investment strategies tailored to your goals</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-purple-600 text-xl">🔒</span>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-pink-600 text-base sm:text-xl">💡</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Secure Platform</h3>
-                    <p className="text-gray-600">Bank-grade security for your investments</p>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Expert Guidance</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">Professional advisors at your fingertips</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-pink-600 text-xl">📱</span>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-purple-600 text-base sm:text-xl">🔒</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Easy Access</h3>
-                    <p className="text-gray-600">Manage investments anytime, anywhere</p>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Secure Platform</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">Bank-grade security for your investments</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-pink-600 text-base sm:text-xl">📱</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1">Easy Access</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">Manage investments anytime, anywhere</p>
                   </div>
                 </div>
               </div>
@@ -367,51 +361,51 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-12 md:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-900">
               Powerful Features for Smart Investing
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
               Everything you need to make informed investment decisions and grow your wealth
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Feature 1 */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-2xl">📊</span>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">📊</span>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Portfolio Analytics</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-gray-900">Portfolio Analytics</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                 Advanced analytics and insights to track your investment performance and make data-driven decisions.
               </p>
-              <ul className="space-y-3">
-                <li className="flex items-center text-gray-600">
+              <ul className="space-y-2 sm:space-y-3">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
                   Real-time tracking
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
                   Performance metrics
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Risk analysis
+                  Custom reports
                 </li>
               </ul>
             </motion.div>
@@ -422,30 +416,30 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div className="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-2xl">🎯</span>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-pink-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">🤖</span>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Smart Goals</h3>
-              <p className="text-gray-600 mb-4">
-                Set and track your financial goals with personalized investment strategies and recommendations.
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-gray-900">AI Recommendations</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                Personalized investment recommendations powered by advanced machine learning algorithms.
               </p>
-              <ul className="space-y-3">
-                <li className="flex items-center text-gray-600">
+              <ul className="space-y-2 sm:space-y-3">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Goal planning
+                  Tailored strategies
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Progress tracking
+                  Risk assessment
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Smart adjustments
+                  Market trend analysis
                 </li>
               </ul>
-          </motion.div>
+            </motion.div>
 
             {/* Feature 3 */}
             <motion.div 
@@ -453,27 +447,27 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-2xl">🤝</span>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">👩‍💼</span>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Expert Support</h3>
-              <p className="text-gray-600 mb-4">
-                Get professional guidance and support from our team of experienced financial advisors.
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-gray-900">Women's Network</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                Connect with a community of women investors, mentors, and financial experts.
               </p>
-              <ul className="space-y-3">
-                <li className="flex items-center text-gray-600">
+              <ul className="space-y-2 sm:space-y-3">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  1-on-1 consulting
+                  Mentorship programs
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Market insights
+                  Networking events
                 </li>
-                <li className="flex items-center text-gray-600">
+                <li className="flex items-center text-xs sm:text-sm text-gray-600">
                   <span className="text-green-500 mr-2">✓</span>
-                  Investment advice
+                  Knowledge sharing
                 </li>
               </ul>
             </motion.div>
